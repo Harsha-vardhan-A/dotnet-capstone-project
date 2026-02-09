@@ -1,6 +1,8 @@
 using capstone_prjct.Entities;
 using capstone_prjct.Data;
 using Microsoft.EntityFrameworkCore;
+using capstone_prjct.DTOs;
+using BCrypt.Net;
 namespace capstone_prjct.Repository;
 public class UserRepository: IUserRepository {
     private readonly AppDbContext context;
@@ -21,16 +23,23 @@ public class UserRepository: IUserRepository {
         return user;
     }
     
-    public async Task<User> CreateUserAsync(User user)
+    public async Task<User> CreateUserAsync(UserRequest user)
     {
-        user.CreatedAt = DateTime.UtcNow;
-        user.UpdatedAt = DateTime.UtcNow;
-        context.User.Add(user);
+        var newUser = new User
+        {
+            Name = user.Name,
+            Email = user.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.Password),
+            Role = user.Role,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        context.User.Add(newUser);
         await context.SaveChangesAsync();
-        return user;
+        return newUser;
     }
     
-    public async Task<User> UpdateUserAsync(int id, User user)
+    public async Task<User> UpdateUserAsync(int id, UserRequest user)
     {
         var existingUser = await context.User.FindAsync(id);
         if (existingUser == null)
@@ -40,7 +49,7 @@ public class UserRepository: IUserRepository {
         
         existingUser.Name = user.Name;
         existingUser.Email = user.Email;
-        existingUser.PasswordHash = user.PasswordHash;
+        existingUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
         existingUser.Role = user.Role;
         existingUser.UpdatedAt = DateTime.UtcNow;
         

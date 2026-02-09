@@ -8,6 +8,8 @@ namespace capstone_prjct.Controller;
 [ApiController]
 [ServiceFilter(typeof(ResTimeActionFilter))]
 [ServiceFilter(typeof(GlobalResponseFilter))]
+[ServiceFilter(typeof(AuthenticationFilter))]
+[ServiceFilter(typeof(RoleAuthorizationFilter))]
 [Route("policy")]
 public class PolicyController: ControllerBase
 {
@@ -19,6 +21,7 @@ public class PolicyController: ControllerBase
     }
 
     [HttpGet]
+    [RequireRole("Admin", "User")]
     public async Task<IActionResult> GetAllPoliciesAsync()
     {
         var policies = await policyService.GetAllPoliciesAsync();
@@ -79,6 +82,12 @@ public class PolicyController: ControllerBase
     public async Task<IActionResult> EnrollUserInPolicyAsync(int policyId)
     {
         // Enrollment logic to be implemented
-        return Ok($" enrolled in policy with ID {policyId}.");
+        var userId = HttpContext.Items["UserId"] as int?;
+        Console.WriteLine($"Enrolling user with ID {userId} in policy with ID {policyId}.");
+        if (userId == null)        {
+            return Unauthorized("User ID not found in context.");
+        }
+        await policyService.EnrollUserInPolicyAsync(policyId, userId.Value);
+        return Ok($"User with ID {userId.Value} enrolled in policy with ID {policyId}.");
     }
 }

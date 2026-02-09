@@ -11,5 +11,6 @@ namespace capstone_prjct.Data
 
         public DbSet<Policy> Policy { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<UserPolicy> UserPolicy { get; set; }
     }
 }

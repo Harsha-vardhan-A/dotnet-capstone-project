@@ -56,5 +56,11 @@ public class PolicyRepository : IPolicyRepository {
         await this.context.SaveChangesAsync();
         return policy;
     }
+    public async Task<Policy> EnrollUserInPolicyAsync(int policyId, int userId)
+    {
+        var userPolicy = await this.context.UserPolicy.AddAsync(new UserPolicy { PolicyId = policyId, UserId = userId, RequestedAt = DateTime.UtcNow, Status = "Pending" });
+        await this.context.SaveChangesAsync();
+        return await this.context.Policy.FindAsync(policyId);
+    }
 
 }

@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using capstone_prjct.Entities;
 using capstone_prjct.Services;
 using capstone_prjct.DTOs;
+using capstone_prjct.Filters;
 namespace capstone_prjct.Controller;
 
 [ApiController]
+[ServiceFilter(typeof(ResTimeActionFilter))]
+[ServiceFilter(typeof(GlobalResponseFilter))]
 [Route("user")]
 [Authorize]
 public class UserController : ControllerBase
@@ -19,7 +22,7 @@ public class UserController : ControllerBase
     
     [HttpPost("create")]
     [AllowAnonymous]
-    public async Task<IActionResult> CreateUser([FromBody] User user)
+    public async Task<IActionResult> CreateUser([FromBody] UserRequest user)
     {
         // Implementation for creating a user goes here
         var createdUser = await this.userService.CreateUserAsync(user);
@@ -43,7 +46,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] User user)
+    public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserRequest user)
     {
         // Implementation for updating a user goes here
         var updatedUser = await this.userService.UpdateUserAsync(id, user);

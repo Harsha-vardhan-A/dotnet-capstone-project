@@ -14,3 +14,20 @@ insert into policy (policy_name, policy_description, premium_amount, created_at,
 ('Auto Secure', 'Complete auto insurance plan covering accidents, theft, and third-party liabilities.', 3000.00, current_date, current_date, true),
 ('Home Safe', 'Home insurance plan covering fire, theft, and natural disasters.', 4000.00, current_date, current_date, false),
 ('Life Protect', 'Life insurance plan providing financial security for your loved ones.', 6000.00, current_date, current_date, true);
+
+CREATE TABLE user_policy (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    policy_id INTEGER NOT NULL,
+    status VARCHAR(250),
+    requested_at DATE,
+    approved_at DATE,
+    CONSTRAINT fk_user_policy_user
+        FOREIGN KEY (user_id)
+        REFERENCES "user"(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_user_policy_policy
+        FOREIGN KEY (policy_id)
+        REFERENCES policy(id)
+        ON DELETE CASCADE
+);

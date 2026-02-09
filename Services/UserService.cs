@@ -30,12 +30,12 @@ public class UserService : IUserService
         return this.userRepository.GetUserByIdAsync(id);
     }
 
-    public Task<User> CreateUserAsync(User user)
+    public Task<User> CreateUserAsync(UserRequest user)
     {
         return this.userRepository.CreateUserAsync(user);
     }
 
-    public Task<User> UpdateUserAsync(int id, User user)
+    public Task<User> UpdateUserAsync(int id, UserRequest user)
     {
         return this.userRepository.UpdateUserAsync(id, user);
     }
@@ -49,7 +49,7 @@ public class UserService : IUserService
         var users = await this.userRepository.GetUserByEmailAsync(email);
         var user = users.FirstOrDefault(u => u.Email == email);
         
-        if (user == null || user.PasswordHash != password) // In real applications, use proper password hashing
+        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
         {
             return null;
         }

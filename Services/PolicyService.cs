@@ -37,9 +37,13 @@ public class PolicyService : IPolicyService
         return this.policyRepository.CreatePolicyAsync(policy);
     }
 
-    public Task<Policy> EnrollUserInPolicyAsync(int policyId, int userId)
+    public async Task<Policy> EnrollUserInPolicyAsync(int policyId, int userId)
     {
-        throw new NotImplementedException();
+        var policy = await this.policyRepository.GetPolicyByIdAsync(policyId);
+        if (policy == null)        {
+            throw new KeyNotFoundException($"Policy with ID {policyId} not found.");
+        }
+        return await this.policyRepository.EnrollUserInPolicyAsync(policyId, userId);
     }
 
 }

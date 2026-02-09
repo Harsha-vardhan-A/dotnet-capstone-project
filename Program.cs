@@ -7,6 +7,7 @@ using capstone_prjct.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 builder.Services.AddScoped<GlobalResponseFilter>();
 builder.Services.AddScoped<ResTimeActionFilter>();
+builder.Services.AddScoped<AuthenticationFilter>();
+builder.Services.AddScoped<RoleAuthorizationFilter>();
 
 builder.Services.AddScoped<IPolicyService, PolicyService>();
 builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
@@ -30,7 +33,33 @@ builder.Services.AddScoped<IUserService, UserService>();
 // });
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer' followed by a space and your JWT token"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PolicyDBConnection"))
