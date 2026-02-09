@@ -93,7 +93,6 @@ public class PolicyRepository : IPolicyRepository {
         {
             throw new KeyNotFoundException($"Enrollment with ID {enrollmentId} not found.");
         }
-        Console.WriteLine($"Approving enrollment: ID={enrollmentId}, UserId={enrollment.UserId}, Policy{enrollment.ApprovedAt}");
         enrollment.Status = "Approved";
         enrollment.ApprovedAt = DateTime.UtcNow;
         this.context.UserPolicy.Update(enrollment);
@@ -117,4 +116,22 @@ public class PolicyRepository : IPolicyRepository {
         return enrollment;
     }
 
+    public async Task<Policy> UpdatePolicyAsync(int id, Policy policy)
+    {
+        var existingPolicy = await this.context.Policy.FindAsync(id);
+        if (existingPolicy == null)
+        {
+            throw new KeyNotFoundException($"Policy with ID {id} not found.");
+        }
+
+        existingPolicy.Name = policy.Name;
+        existingPolicy.Description = policy.Description;
+        existingPolicy.PremiumAmount = policy.PremiumAmount;
+        existingPolicy.IsActive = policy.IsActive;
+
+        this.context.Policy.Update(existingPolicy);
+        await this.context.SaveChangesAsync();
+        
+        return existingPolicy;
+    }
 }

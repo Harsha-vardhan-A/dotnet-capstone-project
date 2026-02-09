@@ -55,6 +55,7 @@ public class PolicyController: ControllerBase
     }
 
     [HttpGet("status", Name = "PolicyByStatus")]
+    [RequireRole("Admin", "User")]
     public async Task<IActionResult> PoliciesByStatusAsync([FromQuery] bool isActive)
     {
         var policies = await policyService.GetPoliciesByStatusAsync(isActive);
@@ -65,12 +66,27 @@ public class PolicyController: ControllerBase
     }
 
     [HttpPost("create")]
+    [RequireRole("Admin")]
     public async Task<IActionResult> CreatePolicyAsync([FromBody] Policy policy)
     {
         var createdPolicy = await this.policyService.CreatePolicyAsync(policy);
         return Ok(createdPolicy);
     }
 
+    [HttpPut("admin/{id}/update")]
+    [RequireRole("Admin")]
+    public async Task<IActionResult> UpdatePolicyAsync(int id, [FromBody] Policy policy)
+    {
+        try
+        {
+            var updatedPolicy = await this.policyService.UpdatePolicyAsync(id, policy);
+            return Ok(updatedPolicy);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 
     [HttpGet("enrollments")]
     public async Task<IActionResult> GetPolicyEnrollmentsAsync()

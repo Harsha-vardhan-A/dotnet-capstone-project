@@ -66,4 +66,13 @@ public class PolicyService : IPolicyService
         return this.policyRepository.RejectEnrollmentAsync(enrollmentId);
     }
 
+    public async Task<Policy> UpdatePolicyAsync(int id, Policy policy)
+    {
+        var existingPolicy = await this.policyRepository.GetPolicyByIdAsync(id);
+        if (existingPolicy == null)        {
+            throw new KeyNotFoundException($"Policy with ID {id} not found.");
+        }
+        return await this.policyRepository.UpdatePolicyAsync(id, policy);
+    }
+
 }

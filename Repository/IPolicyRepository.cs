@@ -12,4 +12,5 @@ public interface IPolicyRepository
     Task<IEnumerable<UserPolicy>> GetEnrollmentsByStatusAsync(string status);
     Task<UserPolicy> ApproveEnrollmentAsync(int enrollmentId);
     Task<UserPolicy> RejectEnrollmentAsync(int enrollmentId);
+    Task<Policy> UpdatePolicyAsync(int id, Policy policy);
 }
