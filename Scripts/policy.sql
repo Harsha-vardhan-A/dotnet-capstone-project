@@ -20,8 +20,8 @@ CREATE TABLE user_policy (
     user_id INTEGER NOT NULL,
     policy_id INTEGER NOT NULL,
     status VARCHAR(250),
-    requested_at DATE,
-    approved_at DATE,
+    requested_at TIMESTAMP,
+    approved_at TIMESTAMP,
     CONSTRAINT fk_user_policy_user
         FOREIGN KEY (user_id)
         REFERENCES "user"(id)

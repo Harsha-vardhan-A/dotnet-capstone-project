@@ -46,4 +46,24 @@ public class PolicyService : IPolicyService
         return await this.policyRepository.EnrollUserInPolicyAsync(policyId, userId);
     }
 
+    public Task<IEnumerable<Policy>> GetUserEnrolledPoliciesAsync(int userId)
+    {
+        return this.policyRepository.GetUserEnrolledPoliciesAsync(userId);
+    }
+
+    public Task<IEnumerable<UserPolicy>> GetEnrollmentsByStatusAsync(string status)
+    {
+        return this.policyRepository.GetEnrollmentsByStatusAsync(status);
+    }
+
+    public Task<UserPolicy> ApproveEnrollmentAsync(int enrollmentId)
+    {
+        return this.policyRepository.ApproveEnrollmentAsync(enrollmentId);
+    }
+
+    public Task<UserPolicy> RejectEnrollmentAsync(int enrollmentId)
+    {
+        return this.policyRepository.RejectEnrollmentAsync(enrollmentId);
+    }
+
 }

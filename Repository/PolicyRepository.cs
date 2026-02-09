@@ -63,4 +63,58 @@ public class PolicyRepository : IPolicyRepository {
         return await this.context.Policy.FindAsync(policyId);
     }
 
+    public async Task<IEnumerable<Policy>> GetUserEnrolledPoliciesAsync(int userId)
+    {
+        var enrolledPolicies = await this.context.UserPolicy
+            .Where(up => up.UserId == userId)
+            .Include(up => up.Policy)
+            .Select(up => up.Policy)
+            .ToListAsync();
+        
+        return enrolledPolicies ?? Enumerable.Empty<Policy>();
+    }
+
+    public async Task<IEnumerable<UserPolicy>> GetEnrollmentsByStatusAsync(string status)
+    {
+        var enrollments = await this.context.UserPolicy
+            .Where(up => up.Status == status)
+            .Include(up => up.User)
+            .Include(up => up.Policy)
+            .OrderBy(up => up.RequestedAt)
+            .ToListAsync();
+        
+        return enrollments ?? Enumerable.Empty<UserPolicy>();
+    }
+
+    public async Task<UserPolicy> ApproveEnrollmentAsync(int enrollmentId)
+    {
+        var enrollment = await this.context.UserPolicy.FindAsync(enrollmentId);
+        if (enrollment == null)
+        {
+            throw new KeyNotFoundException($"Enrollment with ID {enrollmentId} not found.");
+        }
+        Console.WriteLine($"Approving enrollment: ID={enrollmentId}, UserId={enrollment.UserId}, Policy{enrollment.ApprovedAt}");
+        enrollment.Status = "Approved";
+        enrollment.ApprovedAt = DateTime.UtcNow;
+        this.context.UserPolicy.Update(enrollment);
+        await this.context.SaveChangesAsync();
+        
+        return enrollment;
+    }
+
+    public async Task<UserPolicy> RejectEnrollmentAsync(int enrollmentId)
+    {
+        var enrollment = await this.context.UserPolicy.FindAsync(enrollmentId);
+        if (enrollment == null)
+        {
+            throw new KeyNotFoundException($"Enrollment with ID {enrollmentId} not found.");
+        }
+        
+        enrollment.Status = "Rejected";
+        this.context.UserPolicy.Update(enrollment);
+        await this.context.SaveChangesAsync();
+        
+        return enrollment;
+    }
+
 }
