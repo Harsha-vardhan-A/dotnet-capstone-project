@@ -7,8 +7,8 @@ using capstone_prjct.Filters;
 namespace capstone_prjct.Controller;
 
 [ApiController]
-[ServiceFilter(typeof(ResTimeActionFilter))]
 [ServiceFilter(typeof(GlobalResponseFilter))]
+[ServiceFilter(typeof(ResTimeActionFilter))]
 [Route("user")]
 [Authorize]
 public class UserController : ControllerBase
@@ -30,14 +30,19 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [ServiceFilter(typeof(AuthenticationFilter))]
     public async Task<IActionResult> GetUserByIdAsync(int id)
     {
+        Console.WriteLine($"Received request to get user with ID: {id}");
         // Implementation for retrieving a user by ID goes here
         var user = await this.userService.GetUserByIdAsync(id);
         return Ok(user);
     }
 
     [HttpGet]
+    [ServiceFilter(typeof(AuthenticationFilter))]
+    [ServiceFilter(typeof(RoleAuthorizationFilter))]
+    [RequireRole("Admin")]
     public async Task<IActionResult> GetAllUsersAsync()
     {
         // Implementation for retrieving all users goes here
@@ -46,6 +51,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [ServiceFilter(typeof(AuthenticationFilter))]
     public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserRequest user)
     {
         // Implementation for updating a user goes here
@@ -53,6 +59,7 @@ public class UserController : ControllerBase
         return Ok(updatedUser);
     }
     [HttpDelete("{id}")]
+    [ServiceFilter(typeof(AuthenticationFilter))]
     public async Task<IActionResult> DeleteUserAsync(int id)
     {
         // Implementation for deleting a user goes here

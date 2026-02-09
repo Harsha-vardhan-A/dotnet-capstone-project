@@ -1,7 +1,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using capstone_prjct.Services;
-using capstone_prjct.Entities;
+using capstone_prjct.DTOs;
 using capstone_prjct.Filters;
 namespace capstone_prjct.Controller;
 
@@ -33,6 +33,7 @@ public class PolicyController: ControllerBase
     }
 
     [HttpGet("{id}")]
+    [RequireRole("Admin", "User")]
     public async Task<IActionResult> GetPolicyByIdAsync(int id)
     {
         var policy = await policyService.GetPolicyByIdAsync(id);
@@ -44,6 +45,7 @@ public class PolicyController: ControllerBase
     }
 
     [HttpGet("search", Name = "SearchPolicy")]
+    [RequireRole("Admin", "User")]
     public async Task<IActionResult> SearchPoliciesAsync([FromQuery] int minAmount, [FromQuery] int maxAmount)
     {
         var policies = await policyService.SearchPoliciesAsync(minAmount, maxAmount);
@@ -67,7 +69,7 @@ public class PolicyController: ControllerBase
 
     [HttpPost("create")]
     [RequireRole("Admin")]
-    public async Task<IActionResult> CreatePolicyAsync([FromBody] Policy policy)
+    public async Task<IActionResult> CreatePolicyAsync([FromBody] PolicyRequest policy)
     {
         var createdPolicy = await this.policyService.CreatePolicyAsync(policy);
         return Ok(createdPolicy);
@@ -75,7 +77,7 @@ public class PolicyController: ControllerBase
 
     [HttpPut("admin/{id}/update")]
     [RequireRole("Admin")]
-    public async Task<IActionResult> UpdatePolicyAsync(int id, [FromBody] Policy policy)
+    public async Task<IActionResult> UpdatePolicyAsync(int id, [FromBody] PolicyRequest policy)
     {
         try
         {

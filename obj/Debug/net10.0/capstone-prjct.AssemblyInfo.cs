@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("capstone-prjct")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b1362952cc5c551e19df6d24d8897f40e160dc6e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b1a79e9cfb5055679fd1ffb9b65710b8ea75feff")]
 [assembly: System.Reflection.AssemblyProductAttribute("capstone-prjct")]
 [assembly: System.Reflection.AssemblyTitleAttribute("capstone-prjct")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

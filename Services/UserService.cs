@@ -20,30 +20,35 @@ public class UserService : IUserService
         this.configuration = configuration;
     }
 
-    public Task<IEnumerable<User>> GetAllUsersAsync()
+    public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
     {
-        return this.userRepository.GetAllUsersAsync();
+        var users = await this.userRepository.GetAllUsersAsync();
+        return users.Select(MapToUserResponse);
     }
 
-    public Task<User> GetUserByIdAsync(int id)
+    public async Task<UserResponse> GetUserByIdAsync(int id)
     {
-        return this.userRepository.GetUserByIdAsync(id);
+        var user = await this.userRepository.GetUserByIdAsync(id);
+        return MapToUserResponse(user);
     }
 
-    public Task<User> CreateUserAsync(UserRequest user)
+    public async Task<UserResponse> CreateUserAsync(UserRequest user)
     {
-        return this.userRepository.CreateUserAsync(user);
+        var createdUser = await this.userRepository.CreateUserAsync(user);
+        return MapToUserResponse(createdUser);
     }
 
-    public Task<User> UpdateUserAsync(int id, UserRequest user)
+    public async Task<UserResponse> UpdateUserAsync(int id, UserRequest user)
     {
-        return this.userRepository.UpdateUserAsync(id, user);
+        var updatedUser = await this.userRepository.UpdateUserAsync(id, user);
+        return MapToUserResponse(updatedUser);
     }
 
     public Task<bool> DeleteUserAsync(int id)
     {
         return this.userRepository.DeleteUserAsync(id);
     }
+    
     public async Task<LoginResponse?> AuthenticateUserAsync(string email, string password)
     {
         var users = await this.userRepository.GetUserByEmailAsync(email);
@@ -90,6 +95,19 @@ public class UserService : IUserService
         );
         
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    private UserResponse MapToUserResponse(User user)
+    {
+        return new UserResponse
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role,
+            CreatedAt = user.CreatedAt,
+            UpdatedAt = user.UpdatedAt
+        };
     }
 
 }
